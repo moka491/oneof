@@ -1,0 +1,77 @@
+[
+  [every 
+    [Monday]
+  ] 
+  [to run 
+    ["say hello"]
+  ]
+]
+
+
+[
+  [every 
+    [day]
+  ] 
+  [to run 
+    ["say hello"]
+  ] 
+  [mentioning 
+    [me, @User1 and @User2]
+  ]
+]
+
+every 3 minutes mentioning me to run "say time to ping you"
+
+me and @User1 to "watch anime now!" every day at 20:00
+
+OneOf([every/each])
+_
+OneOf([
+  OneOf([Monday/Tuesday/Wednesday/Thursday/Friday/Saturday/Sunday]),
+
+  OneOf([second/minute/hour/day/month/year])
+  Optional(
+    _at_
+    OneOf([
+      Greedy([<number:1-60> seconds, <number:1-60> minutes, <number:0-23> hours]),
+      <number> Optional(:<number>) Optional(OneOf(am/pm))
+    ])
+  )
+  
+  <number>_
+  OneOf([seconds/minutes/hours/days/weeks/months/years])
+  Optional(
+    _at_
+    OneOf([
+      Greedy([<number>_seconds_, <number>_minutes, <number>_hours_]),
+      <number> Optional(:<number>) Optional(OneOf(am/pm))
+    ])
+  )
+])
+
+
+
+interface Expression:
+  assert(): Document[] | null
+
+Number extends Expression:
+  constructor(min, max, length)
+  assert true if current cursor has a number between min and max or with the specified length
+
+Word extends Expression:
+  constructor(text)
+  assert true if can find text at current position
+
+OneOf extends Expression:
+  constructor([expressions])
+  assert true if one of the expressions is true, and seek back after every try
+
+Greedy extends Expression:
+  constructor([expressions])
+  go through each expression until one asserts to true, rolling back on fail.
+  once one is true, try to find more from the list. stop once none can be found anymore
+  assert true if at least one is found, false if not
+
+Optional extends Expression:
+  constructor(expression)
+  assert true if expression is true (and add to document), but assert true otherwise too.
