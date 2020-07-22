@@ -21,6 +21,13 @@ export abstract class Expression implements IExpression {
     return this.then(expr);
   }
 
+  between(expr: Expression): Expression {
+    throw new Error("Method not implemented.");
+  }
+  separatedBy(expr: Expression): Expression {
+    throw new Error("Method not implemented.");
+  }
+
   parse(input: string) {
     // Note: In the end, one single parser is used (with a nested chain of parsers).
     // The question is, will parsing consume the input, and thus send smaller fractions of text down to the other parsers?
